@@ -16,10 +16,10 @@ Route::get('/parse', function (){
 });
 Route::get('/', function () {
 // Your Access Key ID, as taken from the Your Account page
-    $access_key_id = "AKIAJMQR4HOSKT5AMSIA";
+    $access_key_id = "AKIAJMNDW56U64NBNPVQ";
 
 // Your Secret Key corresponding to the above ID, as taken from the Your Account page
-    $secret_key = "dcwfMUcJ2nJVl0h2xoWi9GIdyQ13XrXfMWUZc+Ky";
+    $secret_key = env('AWS_SECRET_KEY');
 
 // The region you are interested in
     $endpoint = "webservices.amazon.com.mx";
@@ -29,11 +29,12 @@ Route::get('/', function () {
     $params = array(
         "Service" => "AWSECommerceService",
         "Operation" => "ItemSearch",
-        "AWSAccessKeyId" => "AKIAJMQR4HOSKT5AMSIA",
-        "AssociateTag" => "103573b-20",
+        "AWSAccessKeyId" => env('AWS_ACCESS_KEY_ID'),
+        "AssociateTag" => env('AWS_ASSOCIATE_TAG'),
         "SearchIndex" => "VideoGames",
         "ResponseGroup" => "Images,ItemAttributes,Offers",
-        "Title" => "horizon"
+        "Title" => "Horizon",
+        "Sort" => "-price"
     );
 
 // Set current timestamp if not set
@@ -61,7 +62,6 @@ Route::get('/', function () {
 
 // Generate the signed URL
     $request_url = 'http://'.$endpoint.$uri.'?'.$canonical_query_string.'&Signature='.rawurlencode($signature);
-
     $client = new \GuzzleHttp\Client();
     $response = $client->request('GET', $request_url, [
         'headers' => ['Accept' => 'application/xml'],
@@ -69,10 +69,7 @@ Route::get('/', function () {
     ])->getBody()->getContents();
 
     $responseXml = simplexml_load_string($response);
-
-
     foreach($responseXml->Items->Item as $item){
-        //dd($item);
         echo("id:".(string)$item->ASIN."<br>");
         echo("detailUrl:".(string)$item->DetailPageURL."<br>");
         echo("smallImage:".(string)$item->SmallImage->URL."<br>");
@@ -82,9 +79,14 @@ Route::get('/', function () {
         echo("title:".(string)$item->ItemAttributes->Title."<br>");
         echo("studio:".(string)$item->ItemAttributes->Studio."<br>");
         echo("author:".(string)$item->ItemAttributes->Author."<br>");
-        //ImageSets->ImageSet foreach
-
-        //Offers Offer OfferListing  Price FormattedPrice
+        foreach ($item->ImageSets as $index => $image) {
+            echo("...imagMdm".$index.":".$image->ImageSet->MediumImage->URL."<br>");
+            echo("...imagLrg".$index.":".$image->ImageSet->LargeImage->URL."<br>");
+        }
+        foreach ($item->Offers as $idex => $offer){
+            if(isset($offer->Offer->OfferListing->Price->FormattedPrice))
+                echo("...oferPrice".$index.":".$offer->Offer->OfferListing->Price->FormattedPrice."<br>");
+        }
         echo "<br>";
     }
 });
