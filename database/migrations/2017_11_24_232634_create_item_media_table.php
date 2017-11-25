@@ -15,6 +15,10 @@ class CreateItemMediaTable extends Migration
     {
         Schema::create('item_media', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('item_id')->unsigned();
+            $table->foreign('item_id')->references('id')->on('items');
+            $table->string('largeImageUrl');
+            $table->string('mediumImageUrl');
             $table->timestamps();
         });
     }
@@ -26,6 +30,7 @@ class CreateItemMediaTable extends Migration
      */
     public function down()
     {
+        //Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('item_media');
     }
 }

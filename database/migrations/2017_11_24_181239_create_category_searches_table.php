@@ -15,6 +15,10 @@ class CreateCategorySearchesTable extends Migration
     {
         Schema::create('category_searches', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('category_id')->unsigned();
+            $table->integer('search_id')->unsigned();
+            $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreign('search_id')->references('id')->on('searches');
             $table->timestamps();
         });
     }

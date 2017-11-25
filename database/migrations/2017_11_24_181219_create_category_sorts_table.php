@@ -15,6 +15,10 @@ class CreateCategorySortsTable extends Migration
     {
         Schema::create('category_sorts', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('category_id')->unsigned();
+            $table->integer('sort_id')->unsigned();
+            $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreign('sort_id')->references('id')->on('sorts');
             $table->timestamps();
         });
     }
