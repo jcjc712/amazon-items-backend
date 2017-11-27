@@ -16,14 +16,6 @@ Route::get('/parse', function (){
 });
 Route::get('/', function () {
     $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
-
-    $server = $url["host"];
-    $username = $url["user"];
-    $password = $url["pass"];
-    $db = substr($url["path"], 1);
-    dd($server,
-$username,
-$password, $db);
     return view('welcome');
 });
 
