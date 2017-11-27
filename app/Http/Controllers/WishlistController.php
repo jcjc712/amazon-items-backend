@@ -2,29 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Item;
+use App\User;
 use App\Wishlist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class WishlistController extends Controller
 {
+    public function __construct(User $user, Item $item)
+    {
+        $this->user = $user;
+        $this->item = $item;
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        /*TODO quitar id hardcodeado*/
+        $user = $this->user->find(1);
+        return response()->json($user->listOfItems($request), 200);
     }
 
     /**
@@ -35,7 +36,15 @@ class WishlistController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        /*TODO quitar id hardcodeado*/
+        $user = $this->user->find(1);
+        $nonexistentItems = $this->item->whichItemsNonExistent($request->item);
+        $responseItems = $this->item->lookForItems($nonexistentItems);
+        $this->item->saveItems($responseItems);
+        $this->item->attachOrDetachItem($request->item, $request->action, $user);
+        return response()->json([
+            "msg"=>"success"
+        ], 200);
     }
 
     /**
@@ -44,42 +53,12 @@ class WishlistController extends Controller
      * @param  \App\Wishlist  $wishlist
      * @return \Illuminate\Http\Response
      */
-    public function show(Wishlist $wishlist)
+    public function show(Item $item)
     {
-        //
+        return response()->json([
+            "row"=>$item,
+            "msg"=>"success"
+        ], 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Wishlist  $wishlist
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Wishlist $wishlist)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Wishlist  $wishlist
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Wishlist $wishlist)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Wishlist  $wishlist
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Wishlist $wishlist)
-    {
-        //
-    }
 }

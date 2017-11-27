@@ -16,15 +16,15 @@ class CreateItemsTable extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->increments('id');
             $table->string('asin',20);
-            $table->string('detailUrl', 150);
-            $table->string('smallImageUrl', 150);
-            $table->string('largeImageUrl', 150);
-            $table->decimal('price', 8, 2);
-            $table->decimal('offerPrice', 8, 2);
-            $table->string('pages',150);
-            $table->string('title',150);
-            $table->string('studio',200);
-            $table->string('author',100);
+            $table->string('detailPageURL', 250)->nullable();
+            $table->string('smallImage', 250)->nullable();
+            $table->string('largeImage', 250)->nullable();
+            $table->string('price', 20)->nullable();
+            $table->string('offerPrice', 20)->nullable();
+            $table->string('pages',15)->nullable();
+            $table->string('title',250)->nullable();
+            $table->string('studio',200)->nullable();
+            $table->string('author',100)->nullable();
             $table->timestamps();
         });
     }

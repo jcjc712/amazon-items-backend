@@ -28,25 +28,12 @@ class ThirdPartyItemsController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(),200);
         }
-        /*searchIndex, required and exist category*/
-        /*Sort required and should be type of searchIndex*/
-        /*keywords a word to look for*/
         $thirdParty = ThirdPartyFactory::create($request->service);
         /*Make the request to the thirdparty*/
         $response = $thirdParty->makeRequest($request);
         $processResponse = $thirdParty->processResponse($response);
-
         /*return an array*/
         return response()->json($this->localItems->matchWithLocalItems($processResponse),200);
     }
 
-    /*TODO solo para probar*/
-    public function show($id, Request $request){
-        $service = 'SpecificAmazon';
-        $thirdParty = ThirdPartyFactory::create($service);
-        /*Make the request to the thirdparty*/
-        $response = $thirdParty->makeRequest($request);
-        $processResponse = $thirdParty->processResponse($response);
-        return $processResponse;
-    }
 }

@@ -30,9 +30,12 @@ class SearchAmazonItems implements ThirdPartyIterface
             "ItemPage" => $paramsRequest->itemPage
         );
         /*To add more filters*/
-        foreach ($paramsRequest->filters as $index => $item){
-            $params[$index] = $item;
+        if(isset($paramsRequest->filters)){
+            foreach ($paramsRequest->filters as $index => $item){
+                $params[$index] = $item;
+            }
         }
+
         // Set current timestamp if not set
         if (!isset($params["Timestamp"])) {
             $params["Timestamp"] = gmdate('Y-m-d\TH:i:s\Z');
@@ -64,17 +67,20 @@ class SearchAmazonItems implements ThirdPartyIterface
     public function processResponse($response){
         $respPrecess = [];
         $count = 0;
+        $asinList = [];
         foreach($response->Items->Item as $index => $item){
+            array_push($asinList,(string)$item->ASIN);
             $respPrecess[] = [
                 "asin" => (string)$item->ASIN,
                 "detailPageURL" => (string)$item->DetailPageURL,
-                "smallImage" => (string)$item->SmallImage->URL,
+                "smallImage" => (string)$item->MediumImage->URL,
                 "largeImage" => (string)$item->LargeImage->URL,
                 "price" => (string)$item->ItemAttributes->ListPrice->FormattedPrice,
                 "pages" => (string)$item->ItemAttributes->NumberOfPages,
                 "title" => (string)$item->ItemAttributes->Title,
                 "studio" => (string)$item->ItemAttributes->Studio,
                 "author" => (string)$item->ItemAttributes->Author,
+                "follow" => 0,
 
             ];
             /*To get many images for media*/
@@ -87,7 +93,7 @@ class SearchAmazonItems implements ThirdPartyIterface
             /*List of offers*/
             foreach ($item->Offers as $idex => $offer){
                 if(isset($offer->Offer->OfferListing->Price->FormattedPrice)){
-                    $respPrecess[$count]['img'][] = [
+                    $respPrecess[$count]['offers'][] = [
                         "offerPrice" => (string)$offer->Offer->OfferListing->Price->FormattedPrice,
                     ];
                 }
@@ -95,10 +101,12 @@ class SearchAmazonItems implements ThirdPartyIterface
             $count += 1;
         }
         return [
+            "msg"=>"success",
             "rows"  =>  $respPrecess,
             "totalResults"  =>  (string)$response->Items->TotalResults,
             "totalPages"    =>  (string)$response->Items->TotalPages,
             "currentPage"   =>  (string)$response->Items->Request->ItemSearchRequest->ItemPage,
+            "asinList"      => $asinList
         ];
     }
 }

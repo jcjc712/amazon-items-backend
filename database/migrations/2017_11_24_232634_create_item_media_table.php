@@ -17,8 +17,8 @@ class CreateItemMediaTable extends Migration
             $table->increments('id');
             $table->integer('item_id')->unsigned();
             $table->foreign('item_id')->references('id')->on('items');
-            $table->string('largeImageUrl');
-            $table->string('mediumImageUrl');
+            $table->string('mediumImage', 250);
+            $table->string('largeImage', 250);
             $table->timestamps();
         });
     }

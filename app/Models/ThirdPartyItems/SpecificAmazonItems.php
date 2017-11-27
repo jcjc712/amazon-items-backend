@@ -12,7 +12,7 @@ use function GuzzleHttp\Psr7\str;
  */
 class SpecificAmazonItems implements ThirdPartyIterface
 {
-    public function makeRequest($paramsRequest){
+    public function makeRequest($lookForItems){
         // Your Secret Key corresponding to the above ID, as taken from the Your Account page
         $secret_key = env('AWS_SECRET_KEY');
         // The region you are interested in
@@ -23,7 +23,7 @@ class SpecificAmazonItems implements ThirdPartyIterface
             "Operation" => "ItemLookup",
             "AWSAccessKeyId" => env('AWS_ACCESS_KEY_ID'),
             "AssociateTag" => env('AWS_ASSOCIATE_TAG'),
-            "ItemId" => "8804503025, 3631518218",
+            "ItemId" => $lookForItems,
             "ResponseGroup" => "Images,ItemAttributes,Offers",
             "IdType" => "ASIN",
         );
@@ -63,7 +63,7 @@ class SpecificAmazonItems implements ThirdPartyIterface
             $respPrecess[] = [
                 "asin" => (string)$item->ASIN,
                 "detailPageURL" => (string)$item->DetailPageURL,
-                "smallImage" => (string)$item->SmallImage->URL,
+                "smallImage" => (string)$item->MediumImage->URL,
                 "largeImage" => (string)$item->LargeImage->URL,
                 "price" => (string)$item->ItemAttributes->ListPrice->FormattedPrice,
                 "pages" => (string)$item->ItemAttributes->NumberOfPages,
@@ -82,7 +82,7 @@ class SpecificAmazonItems implements ThirdPartyIterface
             /*List of offers*/
             foreach ($item->Offers as $idex => $offer){
                 if(isset($offer->Offer->OfferListing->Price->FormattedPrice)){
-                    $respPrecess[$count]['img'][] = [
+                    $respPrecess[$count]['offers'][] = [
                         "offerPrice" => (string)$offer->Offer->OfferListing->Price->FormattedPrice,
                     ];
                 }
@@ -90,6 +90,7 @@ class SpecificAmazonItems implements ThirdPartyIterface
             $count += 1;
         }
         return [
+            "msg"=>"success",
             "rows"  =>  $respPrecess,
             "totalResults"  =>  (string)$response->Items->TotalResults,
             "totalPages"    =>  (string)$response->Items->TotalPages,
