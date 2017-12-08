@@ -16,7 +16,7 @@ class Cors
     public function handle($request, Closure $next)
     {
         //Here we put our client domains
-        $trusted_domains = ["http://localhost:4200", "http://another-domain.com"];
+        $trusted_domains = ["http://localhost:4200", "https://wishlist-client.herokuapp.com"];
 
         if(isset($request->server()['HTTP_ORIGIN'])) {
             $origin = $request->server()['HTTP_ORIGIN'];
