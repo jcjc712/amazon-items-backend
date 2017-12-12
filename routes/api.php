@@ -41,3 +41,8 @@ Route::get('wishlist/{item}', 'WishlistController@show');
 
 /*List of filter*/
 Route::get('filter', 'FilterController@index');
+
+
+Route::get('usermail', function (){
+    return env('MAIL_USERNAME');
+});
