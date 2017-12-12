@@ -18,18 +18,17 @@ class Item extends Model
         "studio",
         "author"
     ];
-    public function matchWithLocalItems($thirdPartyResponse){
-        /*TODO if user is logge in do...*/
-        /*TODO match my items with these...*/
-        $userId = 1;
-        $user = User::find(1);
-
-        $matches = $user->items()->whereIn('asin',$thirdPartyResponse['asinList'])->get();
-        foreach ($matches as  $localItem){
-            foreach ($thirdPartyResponse['rows'] as $index => $item){
-                if($item['asin'] == $localItem->asin){
-                    $thirdPartyResponse['rows'][$index]['follow'] = 1;
-                    break;
+    public function matchWithLocalItems($user, $thirdPartyResponse){
+        //$userId = 1;
+        //$user = User::find(1);
+        if($user != null){
+            $matches = $user->items()->whereIn('asin',$thirdPartyResponse['asinList'])->get();
+            foreach ($matches as  $localItem){
+                foreach ($thirdPartyResponse['rows'] as $index => $item){
+                    if($item['asin'] == $localItem->asin){
+                        $thirdPartyResponse['rows'][$index]['follow'] = 1;
+                        break;
+                    }
                 }
             }
         }

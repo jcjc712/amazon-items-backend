@@ -23,8 +23,7 @@ class WishlistController extends Controller
      */
     public function index(Request $request)
     {
-        /*TODO quitar id hardcodeado*/
-        $user = $this->user->find(1);
+        $user = $request->user();
         return response()->json($user->listOfItems($request), 200);
     }
 
@@ -36,8 +35,7 @@ class WishlistController extends Controller
      */
     public function store(Request $request)
     {
-        /*TODO quitar id hardcodeado*/
-        $user = $this->user->find(1);
+        $user = $request->user();
         $nonexistentItems = $this->item->whichItemsNonExistent($request->item);
         $responseItems = $this->item->lookForItems($nonexistentItems);
         $this->item->saveItems($responseItems);

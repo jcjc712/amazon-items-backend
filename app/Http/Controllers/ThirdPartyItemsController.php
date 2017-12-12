@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Item;
 use App\Models\ThirdPartyItems\ThirdPartyFactory;
 use Illuminate\Http\Request;
+use Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ThirdPartyItemsController extends Controller
@@ -16,6 +17,11 @@ class ThirdPartyItemsController extends Controller
     }
 
     public function index(Request $request){
+        $user = null;
+        /*If you are login*/
+        if ( $request->has('Authorization') || $request->header('Authorization') ) {
+            $user = Auth::guard('api')->user();
+        }
         /*Validation of request parameters*/
         $validator = Validator::make($request->all(), [
             'service' => 'required|max:20',
@@ -33,7 +39,7 @@ class ThirdPartyItemsController extends Controller
         $response = $thirdParty->makeRequest($request);
         $processResponse = $thirdParty->processResponse($response);
         /*return an array*/
-        return response()->json($this->localItems->matchWithLocalItems($processResponse),200);
+        return response()->json($this->localItems->matchWithLocalItems($user,$processResponse),200);
     }
 
 }
